@@ -1,0 +1,102 @@
+version: '3.8'
+
+# ============================================================
+# Docker Compose for Autonomous Insurance Claims Processor
+# ============================================================
+
+services:
+  # ---------------------------------------------------------
+  # PostgreSQL Database
+  # ---------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: claims_db
+    environment:
+      POSTGRES_DB: insurance_claims_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - claims_network
+
+  # ---------------------------------------------------------
+  # Main Application
+  # ---------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: autonomous_claims_processor/Dockerfile
+    container_name: claims_processor
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: insurance_claims_db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      
+      # API Keys (set in .env)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      PINECONE_API_KEY: ${PINECONE_API_KEY}
+      PINECONE_ENVIRONMENT: ${PINECONE_ENVIRONMENT:-us-east-1}
+      PINECONE_INDEX_NAME: ${PINECONE_INDEX_NAME:-insurance-claims-index}
+      TOMORROW_IO_API_KEY: ${TOMORROW_IO_API_KEY}
+      
+      # Application
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      SECRET_KEY: ${SECRET_KEY:-change-this-in-production}
+      
+      # Insurer Profile
+      INSURER_COMPANY_NAME: ${INSURER_COMPANY_NAME:-Default Insurance Co}
+      INSURER_LINES_OF_BUSINESS: ${INSURER_LINES_OF_BUSINESS:-Auto,Property,Health,Liability}
+      INSURER_STATES_LICENSED: ${INSURER_STATES_LICENSED:-TX,CA,NY,FL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - ./documents:/app/documents
+    networks:
+      - claims_network
+    restart: unless-stopped
+
+  # ---------------------------------------------------------
+  # pgAdmin (Database Management UI) - Optional
+  # ---------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: claims_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - claims_network
+    profiles:
+      - tools
+
+networks:
+  claims_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:

@@ -1,0 +1,43 @@
+# ============================================================
+# Pytest Configuration
+# ============================================================
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=autonomous_claims_processor",
+    "--cov-report=term-missing",
+    "--cov-report=html:htmlcov"
+]
+testpaths = [
+    "autonomous_claims_processor/tests"
+]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning"
+]
+
+# Coverage settings
+[tool.coverage.run]
+source = ["autonomous_claims_processor"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/config/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:"
+]

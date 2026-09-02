@@ -1,4 +1,4 @@
-# 🏥 Autonomous Insurance Claims Processor
+﻿# 🏥 Autonomous Insurance Claims Processor
 
 ## ClaimOS — AI-Powered Claims Processing System
 
@@ -558,7 +558,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Development Setup
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/m-shamim09/ClaimOS
+2. Clone your fork: `git clone https://github.com/taha-codes09/ClaimOS
 3. Create a feature branch: `git checkout -b feature/amazing-feature`
 4. Make your changes and add tests
 5. Run tests: `pytest`
@@ -580,7 +580,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Tests](https://github.com/m-shamim09/ClaimOS)](https://github.com/m-shamim09/ClaimOS)
+[![Tests](https://github.com/taha-codes09/ClaimOS)](https://github.com/taha-codes09/ClaimOS)
 
 ---
 
